@@ -22,7 +22,7 @@ namespace PascalCaseForClass
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return value.ToString();
         }
 
         // http://stackoverflow.com/questions/1206019/converting-string-to-title-case-in-c-sharp
