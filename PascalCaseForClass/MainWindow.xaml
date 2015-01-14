@@ -1,0 +1,65 @@
+﻿<controls:MetroWindow x:Class="PascalCaseForClass.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:convert="clr-namespace:PascalCaseForClass"
+        Title="PascalCaseForClass" Height="350" Width="525"
+        xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        DataContext="{Binding Main, Source={StaticResource Locator}}">
+    <Window.Resources>
+        <convert:PascalCaseConverter x:Key="Converter" />
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"  />
+            <RowDefinition  />
+            <RowDefinition  />
+        </Grid.RowDefinitions>
+        <ToolBar>
+            <!--<ToggleButton>
+                <ToggleButton.Resources>
+                    <Style TargetType="{x:Type ToggleButton}">
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Content" Value="Json" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="Content" Value="Xml" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToggleButton.Resources>
+            </ToggleButton>-->
+            <ComboBox Width="72">
+                <ComboBoxItem IsSelected="True" Content="Xml " />
+                <ComboBoxItem Content="Json"></ComboBoxItem>
+            </ComboBox>
+            <Separator />
+            <Button Content="" FontFamily="Segoe Ui Symbol"
+                    Command="{Binding Copy}" CommandParameter="{Binding Text, ElementName=ResultBox}" />
+        </ToolBar>
+        <Grid Grid.Row="1" Margin="12,12,12,6">
+            <TextBox x:Name="SourceBox" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" />
+            <TextBlock IsHitTestVisible="False" Foreground="DarkGray" Padding="6,3,0,0">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Text, ElementName=ResultBox}" Value="">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+                <Run>public class Page</Run><LineBreak />
+                <Run>{</Run><LineBreak />
+                <Run Text="    public string start { get; set; }"/><LineBreak />
+                <Run Text="    public int label { get; set; }"/><LineBreak />
+                <Run>}</Run>
+            </TextBlock>
+        </Grid>
+        <Grid Grid.Row="2" Margin="12,6,12,12">
+            <TextBox x:Name="ResultBox" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"
+                     Text="{Binding Text, ElementName=SourceBox, Converter={StaticResource Converter}}" />
+        </Grid>
+    </Grid>
+</controls:MetroWindow>
