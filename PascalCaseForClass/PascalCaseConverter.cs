@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using PascalCaseForClass.ViewModel;
 
 namespace PascalCaseForClass
 {
@@ -38,10 +39,16 @@ namespace PascalCaseForClass
                 {
                     var tab = line.Remove(line.Length - 14).Split(' ');
                     var property = tab[tab.Length - 1];
-                    correctLines.Add(line.Replace(
-                        String.Format(" {0} ", property),
-                        String.Format(" {0} ", UppercaseFirst(property))
-                        ));
+                    var Property = UppercaseFirst(property);
+                    if (!Property.Equals(property))
+                    {
+                        var padding = line.TakeWhile(Char.IsWhiteSpace).Count();
+                        correctLines.Add(String.Format(@"{0}{1}[JsonProperty(PropertyName = ""{2}"")]", 
+                            Environment.NewLine, new String(' ', padding), property));
+                        correctLines.Add(line.Replace(String.Format(" {0} ", property), String.Format(" {0} ", Property)));
+                    }
+                    else
+                        correctLines.Add(Environment.NewLine + line);
                 }
                 else
                     correctLines.Add(line);
@@ -56,6 +63,5 @@ namespace PascalCaseForClass
             a[0] = Char.ToUpper(a[0]);
             return new String(a);
         }
-
     }
 }
