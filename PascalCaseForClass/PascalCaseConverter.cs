@@ -35,8 +35,9 @@ namespace PascalCaseForClass
         {
             var correctLines = new Collection<string>();
             var lines = source.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-            foreach (var line in lines)
+            for (int index = 0; index < lines.Length; index++)
             {
+                var line = lines[index];
                 if (!String.IsNullOrWhiteSpace(line) && line.EndsWith(" { get; set; }"))
                 {
                     var tab = line.Remove(line.Length - 14).Split(' ');
@@ -45,12 +46,15 @@ namespace PascalCaseForClass
                     if (!Property.Equals(property))
                     {
                         var padding = line.TakeWhile(Char.IsWhiteSpace).Count();
-                        var attribute = String.Format(isXml ? @"[XmlElement(""{0}"")]" : @"[JsonProperty(PropertyName = ""{0}"")]", property);
-                        correctLines.Add(String.Format(@"{0}{1}{2}", Environment.NewLine, new String(' ', padding), attribute));
+                        var attribute =
+                            String.Format(isXml ? @"[XmlElement(""{0}"")]" : @"[JsonProperty(PropertyName = ""{0}"")]",
+                                property);
+                        correctLines.Add(String.Format(@"{0}{1}{2}", Environment.NewLine, new String(' ', padding),
+                            attribute));
                         correctLines.Add(line.Replace(String.Format(" {0} ", property), String.Format(" {0} ", Property)));
                     }
                     else
-                        correctLines.Add(Environment.NewLine + line);
+                        correctLines.Add((index > 0 && lines[index - 1].All(c => " {".Contains(c)) ? String.Empty : Environment.NewLine) + line);
                 }
                 else
                     correctLines.Add(line);

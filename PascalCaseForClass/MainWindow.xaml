@@ -4,7 +4,7 @@
         xmlns:convert="clr-namespace:PascalCaseForClass"
         Title="AlCase" Height="350" Width="525"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-                      DataContext="{Binding Main, Source={StaticResource Locator}}">
+        DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Window.Resources>
         <convert:PascalCaseConverter x:Key="Converter" />
     </Window.Resources>
