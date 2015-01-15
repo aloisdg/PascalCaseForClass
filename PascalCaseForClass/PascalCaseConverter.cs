@@ -40,7 +40,7 @@ namespace PascalCaseForClass
                     var property = tab[tab.Length - 1];
                     correctLines.Add(line.Replace(
                         String.Format(" {0} ", property),
-                        String.Format(" {0} ", culture.TextInfo.ToTitleCase(property))
+                        String.Format(" {0} ", UppercaseFirst(property))
                         ));
                 }
                 else
@@ -48,5 +48,14 @@ namespace PascalCaseForClass
             }
             return String.Join(Environment.NewLine, correctLines);
         }
+
+        // http://www.dotnetperls.com/uppercase-first-letter
+        static string UppercaseFirst(string s)
+        {
+            var a = s.ToCharArray();
+            a[0] = Char.ToUpper(a[0]);
+            return new String(a);
+        }
+
     }
 }
