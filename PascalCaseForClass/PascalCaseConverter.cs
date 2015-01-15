@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -28,7 +30,23 @@ namespace PascalCaseForClass
         // http://stackoverflow.com/questions/1206019/converting-string-to-title-case-in-c-sharp
         private static string ConvertToPascalCase(string source, CultureInfo culture)
         {
-            return culture.TextInfo.ToTitleCase(source);
+            var correctLines = new Collection<string>();
+            var lines = source.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            foreach (var line in lines)
+            {
+                if (!String.IsNullOrWhiteSpace(line) && line.EndsWith(" { get; set; }"))
+                {
+                    var tab = line.Remove(line.Length - 14).Split(' ');
+                    var property = tab[tab.Length - 1];
+                    correctLines.Add(line.Replace(
+                        String.Format(" {0} ", property),
+                        String.Format(" {0} ", culture.TextInfo.ToTitleCase(property))
+                        ));
+                }
+                else
+                    correctLines.Add(line);
+            }
+            return String.Join(Environment.NewLine, correctLines);
         }
     }
 }
