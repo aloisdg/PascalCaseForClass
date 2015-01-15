@@ -4,7 +4,7 @@
         xmlns:convert="clr-namespace:PascalCaseForClass"
         Title="AlCase" Height="350" Width="525"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        DataContext="{Binding Main, Source={StaticResource Locator}}">
+                      DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Window.Resources>
         <convert:PascalCaseConverter x:Key="Converter" />
     </Window.Resources>
@@ -15,21 +15,7 @@
             <RowDefinition  />
         </Grid.RowDefinitions>
         <ToolBar>
-            <!--<ToggleButton>
-                <ToggleButton.Resources>
-                    <Style TargetType="{x:Type ToggleButton}">
-                        <Style.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter Property="Content" Value="Json" />
-                            </Trigger>
-                            <Trigger Property="IsChecked" Value="False">
-                                <Setter Property="Content" Value="Xml" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </ToggleButton.Resources>
-            </ToggleButton>-->
-            <ComboBox Width="72">
+            <ComboBox Width="72" x:Name="FormatBox">
                 <ComboBoxItem IsSelected="True" Content="Xml " />
                 <ComboBoxItem Content="Json"></ComboBoxItem>
             </ComboBox>
@@ -38,7 +24,14 @@
                     Command="{Binding Copy}" CommandParameter="{Binding Text, ElementName=ResultBox}" />
         </ToolBar>
         <Grid Grid.Row="1" Margin="12,12,12,6">
-            <TextBox x:Name="SourceBox" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" />
+            <TextBox x:Name="SourceBox" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap">
+                <!--<i:Interaction.Triggers>
+                    <i:EventTrigger EventName="TextChanged">
+                        <command:EventToCommand Command="{Binding Mode=OneWay, Path=LostFocusCommand}"
+                                                     PassEventArgsToCommand="True" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>-->
+            </TextBox>
             <TextBlock IsHitTestVisible="False" Foreground="DarkGray" Padding="6,3,0,0">
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}">
@@ -59,7 +52,15 @@
         </Grid>
         <Grid Grid.Row="2" Margin="12,6,12,12">
             <TextBox x:Name="ResultBox" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"
-                     Text="{Binding Text, ElementName=SourceBox, Converter={StaticResource Converter}}" />
+                     Text="{Binding Text, ElementName=ConcatBlock, Converter={StaticResource Converter}}" />
+            <TextBlock Visibility="Collapsed" x:Name="ConcatBlock">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0}{1}">
+                        <Binding Path="SelectedIndex" ElementName="FormatBox" />
+                        <Binding Path="Text" ElementName="SourceBox" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
         </Grid>
     </Grid>
 </controls:MetroWindow>

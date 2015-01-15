@@ -18,9 +18,11 @@ namespace PascalCaseForClass
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var source = value as string;
-            return !String.IsNullOrEmpty(source)
-                ? ConvertToPascalCase(source, culture)
-                : value.ToString();
+            if (String.IsNullOrEmpty(source))
+                return value.ToString();
+
+            var isXml = source.StartsWith("0");
+            return ConvertToPascalCase(source.Substring(1), isXml);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -28,8 +30,8 @@ namespace PascalCaseForClass
             return value.ToString();
         }
 
-        // http://stackoverflow.com/questions/1206019/converting-string-to-title-case-in-c-sharp
-        private static string ConvertToPascalCase(string source, CultureInfo culture)
+        // [XmlRoot(ElementName = "g")]
+        private static string ConvertToPascalCase(string source, bool isXml)
         {
             var correctLines = new Collection<string>();
             var lines = source.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
@@ -43,8 +45,8 @@ namespace PascalCaseForClass
                     if (!Property.Equals(property))
                     {
                         var padding = line.TakeWhile(Char.IsWhiteSpace).Count();
-                        correctLines.Add(String.Format(@"{0}{1}[JsonProperty(PropertyName = ""{2}"")]", 
-                            Environment.NewLine, new String(' ', padding), property));
+                        var attribute = String.Format(isXml ? @"[XmlElement(""{0}"")]" : @"[JsonProperty(PropertyName = ""{0}"")]", property);
+                        correctLines.Add(String.Format(@"{0}{1}{2}", Environment.NewLine, new String(' ', padding), attribute));
                         correctLines.Add(line.Replace(String.Format(" {0} ", property), String.Format(" {0} ", Property)));
                     }
                     else
