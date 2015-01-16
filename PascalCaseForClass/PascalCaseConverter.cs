@@ -35,7 +35,7 @@ namespace PascalCaseForClass
         {
             var correctLines = new Collection<string>();
             var lines = source.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-            for (int index = 0; index < lines.Length; index++)
+            for (var index = 0; index < lines.Length; index++)
             {
                 var line = lines[index];
                 if (!String.IsNullOrWhiteSpace(line) && line.EndsWith(" { get; set; }"))
@@ -46,11 +46,8 @@ namespace PascalCaseForClass
                     if (!Property.Equals(property))
                     {
                         var padding = line.TakeWhile(Char.IsWhiteSpace).Count();
-                        var attribute =
-                            String.Format(isXml ? @"[XmlElement(""{0}"")]" : @"[JsonProperty(PropertyName = ""{0}"")]",
-                                property);
-                        correctLines.Add(String.Format(@"{0}{1}{2}", Environment.NewLine, new String(' ', padding),
-                            attribute));
+                        var attribute = String.Format(isXml ? @"[XmlElement(""{0}"")]" : @"[JsonProperty(PropertyName = ""{0}"")]", property);
+                        correctLines.Add(String.Format(@"{0}{1}{2}", Environment.NewLine, new String(' ', padding), attribute));
                         correctLines.Add(line.Replace(String.Format(" {0} ", property), String.Format(" {0} ", Property)));
                     }
                     else
