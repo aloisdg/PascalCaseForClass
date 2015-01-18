@@ -18,7 +18,7 @@ namespace PascalCaseForClass
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var source = value as string;
-            if (String.IsNullOrEmpty(source))
+            if (String.IsNullOrWhiteSpace(source))
                 return value.ToString();
 
             var isXml = source.StartsWith("0");
@@ -35,23 +35,28 @@ namespace PascalCaseForClass
         {
             var correctLines = new Collection<string>();
             var lines = source.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-            for (var index = 0; index < lines.Length; index++)
+            foreach (var line in lines)
             {
-                var line = lines[index];
                 if (!String.IsNullOrWhiteSpace(line) && line.EndsWith(" { get; set; }"))
                 {
                     var tab = line.Remove(line.Length - 14).Split(' ');
                     var property = tab[tab.Length - 1];
-                    var Property = UppercaseFirst(property);
-                    if (!Property.Equals(property))
-                    {
-                        var padding = line.TakeWhile(Char.IsWhiteSpace).Count();
-                        var attribute = String.Format(isXml ? @"[XmlElement(""{0}"")]" : @"[JsonProperty(PropertyName = ""{0}"")]", property);
-                        correctLines.Add(String.Format(@"{0}{1}{2}", Environment.NewLine, new String(' ', padding), attribute));
-                        correctLines.Add(line.Replace(String.Format(" {0} ", property), String.Format(" {0} ", Property)));
-                    }
-                    else
-                        correctLines.Add((index > 0 && lines[index - 1].All(c => " {".Contains(c)) ? String.Empty : Environment.NewLine) + line);
+                    var Property = ReplaceUnderscore(property);
+                    //if (!Property.Equals(property))
+                    //{
+                    var padding = line.TakeWhile(Char.IsWhiteSpace).Count();
+                    var attribute =
+                        String.Format(isXml ? @"[XmlElement(""{0}"")]" : @"[JsonProperty(PropertyName = ""{0}"")]",
+                            property);
+                    correctLines.Add(String.Format(@"{0}{1}{2}", Environment.NewLine, new String(' ', padding),
+                        attribute));
+                    correctLines.Add(line.Replace(String.Format(" {0} ", property), String.Format(" {0} ", Property)));
+                    //}
+                    //else
+                    //{
+                    //    //var b = index > 0 && lines[index - 1].Equals("{");
+                    //    correctLines.Add(Environment.NewLine + line);
+                    //}
                 }
                 else
                     correctLines.Add(line);
@@ -65,6 +70,17 @@ namespace PascalCaseForClass
             var a = s.ToCharArray();
             a[0] = Char.ToUpper(a[0]);
             return new String(a);
+        }
+
+        private static string ReplaceUnderscore(string source, string result = "")
+        {
+            source = UppercaseFirst(source);
+            var index = source.IndexOf('_');
+            return (index != -1)
+                ? ReplaceUnderscore(
+                    source.Substring(index + 1),
+                    result + source.Substring(0, index))
+                : result + source;
         }
     }
 }
